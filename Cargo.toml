@@ -2,5 +2,6 @@
 name = "ff-log-cli"
 version = "0.1.0"
 edition = "2024"
+authors = ["Gorka Hernandez <info@gorkahernandez.com>"]
 
 [dependencies]
