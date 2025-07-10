@@ -29,21 +29,29 @@ fn main() -> Result<(), io::Error> {
             "not a valid directory",
         ));
     }
-    for entry in read_dir(path)? {
-        let entry = entry?;
-        let path = entry.path();
-        if path.is_dir() {
-            println!("Ignoring path as it is a directoru: {}", path.display());
-        } else {
-            match config.operation {
-                Operation::List => {
-                    commands::list::list_log_file(&path);
-                }
-                Operation::Backup => {
-                    commands::backup::backup_log_file(&path);
-                }
-                Operation::Delete => {
-                    commands::delete::delete_log_file(&path);
+    match config.operation {
+        Operation::View => {
+            commands::view::view_log_files(path)?;
+        }
+        _ => {
+            for entry in read_dir(path)? {
+                let entry = entry?;
+                let path = entry.path();
+                if path.is_dir() {
+                    println!("Ignoring path as it is a directory: {}", path.display());
+                } else {
+                    match config.operation {
+                        Operation::List => {
+                            commands::list::list_log_file(&path);
+                        }
+                        Operation::Backup => {
+                            commands::backup::backup_log_file(&path);
+                        }
+                        Operation::Delete => {
+                            commands::delete::delete_log_file(&path);
+                        }
+                        Operation::View => unreachable!(),
+                    }
                 }
             }
         }
@@ -57,6 +65,7 @@ enum Operation {
     List,
     Delete,
     Backup,
+    View,
 }
 
 struct Config {
@@ -76,6 +85,7 @@ impl Config {
             "backup" => Operation::Backup,
             "delete" => Operation::Delete,
             "list" => Operation::List,
+            "view" => Operation::View,
             _ => Operation::List,
         };
 
