@@ -8,6 +8,8 @@ mod commands;
 fn main() -> Result<(), io::Error> {
     let start = Instant::now();
 
+    #[cfg(unix)]
+    let app_data = std::env::var("HOME").expect("No HOME directory");
     #[cfg(windows)]
     let app_data = std::env::var("APPDATA").expect("No APP_DATA directory");
 
