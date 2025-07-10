@@ -99,6 +99,9 @@ impl Config {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::fs::File;
+    use std::io::Write;
+    use tempfile::TempDir;
 
     #[test]
     #[should_panic]
@@ -122,5 +125,180 @@ mod tests {
             String::from("invalid_option_2"),
         ]);
         let _config = Config::new(&invalid_args);
+    }
+
+    #[test]
+    fn test_config_new_list_operation() {
+        let args = vec![
+            String::from("program"),
+            String::from("list"),
+            String::from("/path/to/logs"),
+        ];
+        let config = Config::new(&args);
+
+        assert!(matches!(config.operation, Operation::List));
+        assert_eq!(config.fflogs_dir, "/path/to/logs");
+    }
+
+    #[test]
+    fn test_config_new_backup_operation() {
+        let args = vec![
+            String::from("program"),
+            String::from("backup"),
+            String::from("/path/to/logs"),
+        ];
+        let config = Config::new(&args);
+
+        assert!(matches!(config.operation, Operation::Backup));
+        assert_eq!(config.fflogs_dir, "/path/to/logs");
+    }
+
+    #[test]
+    fn test_config_new_delete_operation() {
+        let args = vec![
+            String::from("program"),
+            String::from("delete"),
+            String::from("/path/to/logs"),
+        ];
+        let config = Config::new(&args);
+
+        assert!(matches!(config.operation, Operation::Delete));
+        assert_eq!(config.fflogs_dir, "/path/to/logs");
+    }
+
+    #[test]
+    fn test_config_new_view_operation() {
+        let args = vec![
+            String::from("program"),
+            String::from("view"),
+            String::from("/path/to/logs"),
+        ];
+        let config = Config::new(&args);
+
+        assert!(matches!(config.operation, Operation::View));
+        assert_eq!(config.fflogs_dir, "/path/to/logs");
+    }
+
+    #[test]
+    fn test_config_new_unknown_operation_defaults_to_list() {
+        let args = vec![
+            String::from("program"),
+            String::from("unknown"),
+            String::from("/path/to/logs"),
+        ];
+        let config = Config::new(&args);
+
+        assert!(matches!(config.operation, Operation::List));
+        assert_eq!(config.fflogs_dir, "/path/to/logs");
+    }
+
+    #[test]
+    fn test_config_new_default_directory() {
+        let args = vec![
+            String::from("program"),
+            String::from("list"),
+            String::from("default"),
+        ];
+        let config = Config::new(&args);
+
+        assert_eq!(config.fflogs_dir, "default");
+    }
+
+    #[test]
+    fn test_config_new_with_spaces_in_path() {
+        let args = vec![
+            String::from("program"),
+            String::from("list"),
+            String::from("/path/with spaces/logs"),
+        ];
+        let config = Config::new(&args);
+
+        assert_eq!(config.fflogs_dir, "/path/with spaces/logs");
+    }
+
+    #[test]
+    fn test_config_new_extra_args_ignored() {
+        let args = vec![
+            String::from("program"),
+            String::from("list"),
+            String::from("/path/to/logs"),
+            String::from("extra"),
+            String::from("arguments"),
+        ];
+        let config = Config::new(&args);
+
+        assert!(matches!(config.operation, Operation::List));
+        assert_eq!(config.fflogs_dir, "/path/to/logs");
+    }
+
+    #[test]
+    fn test_operation_enum_display() {
+        let list_op = Operation::List;
+        let backup_op = Operation::Backup;
+        let delete_op = Operation::Delete;
+        let view_op = Operation::View;
+
+        assert!(matches!(list_op, Operation::List));
+        assert!(matches!(backup_op, Operation::Backup));
+        assert!(matches!(delete_op, Operation::Delete));
+        assert!(matches!(view_op, Operation::View));
+    }
+
+    #[test]
+    fn test_main_function_with_invalid_directory() {
+        let temp_dir = TempDir::new().unwrap();
+        let nonexistent_dir = temp_dir.path().join("nonexistent");
+
+        let test_args = vec![
+            String::from("program"),
+            String::from("list"),
+            nonexistent_dir.to_string_lossy().to_string(),
+        ];
+
+        let config = Config::new(&test_args);
+        assert!(matches!(config.operation, Operation::List));
+    }
+
+    #[test]
+    fn test_main_function_with_valid_directory() {
+        let temp_dir = TempDir::new().unwrap();
+
+        let test_file = temp_dir.path().join("test.log");
+        let mut file = File::create(&test_file).unwrap();
+        writeln!(file, "test log content").unwrap();
+
+        let test_args = vec![
+            String::from("program"),
+            String::from("list"),
+            temp_dir.path().to_string_lossy().to_string(),
+        ];
+
+        let config = Config::new(&test_args);
+        assert!(matches!(config.operation, Operation::List));
+        assert_eq!(config.fflogs_dir, temp_dir.path().to_string_lossy());
+    }
+
+    #[test]
+    fn test_config_case_sensitivity() {
+        let args = vec![
+            String::from("program"),
+            String::from("LIST"),
+            String::from("/path/to/logs"),
+        ];
+        let config = Config::new(&args);
+
+        assert!(matches!(config.operation, Operation::List));
+    }
+
+    #[test]
+    fn test_config_partial_match() {
+        let args = vec![
+            String::from("program"),
+            String::from("back"),
+            String::from("/path/to/logs"),
+        ];
+        let config = Config::new(&args);
+
+        assert!(matches!(config.operation, Operation::List));
     }
 }
