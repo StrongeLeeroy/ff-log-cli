@@ -13,12 +13,12 @@ pub fn backup_log_file(path: &Path) {
     }
     new_path = new_path.join(file_name);
 
-    match rename(&path, &new_path) {
+    match rename(path, &new_path) {
         Ok(_result) => {
-            print!("Moved.\n");
+            println!("Moved.");
         }
         Err(err) => {
-            print!("Failed: {}\n", err);
+            println!("Failed: {}", err);
         }
     }
 }
