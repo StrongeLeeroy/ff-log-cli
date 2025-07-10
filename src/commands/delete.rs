@@ -71,7 +71,7 @@ mod tests {
 
         let mut file = File::create(&file_path).unwrap();
         for i in 0..1000 {
-            writeln!(file, "Line {} with some content", i).unwrap();
+            writeln!(file, "Line {i} with some content").unwrap();
         }
 
         assert!(file_path.exists());

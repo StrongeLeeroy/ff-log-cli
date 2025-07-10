@@ -67,7 +67,7 @@ mod tests {
         let test_content = "test content\nline 2\nline 3";
 
         let mut file = File::create(&file_path).unwrap();
-        write!(file, "{}", test_content).unwrap();
+        write!(file, "{test_content}").unwrap();
 
         backup_log_file(&file_path);
 

@@ -57,8 +57,8 @@ pub fn view_log_files(log_dir: &Path) -> Result<(), io::Error> {
     println!("{}", "=".repeat(50));
 
     match fs::read_to_string(selected_file) {
-        Ok(content) => println!("{}", content),
-        Err(e) => println!("Error reading file: {}", e),
+        Ok(content) => println!("{content}"),
+        Err(e) => println!("Error reading file: {e}"),
     }
 
     Ok(())
@@ -154,9 +154,9 @@ mod tests {
         let temp_dir = TempDir::new().unwrap();
 
         for i in 0..100 {
-            let file_path = temp_dir.path().join(format!("test_{}.log", i));
+            let file_path = temp_dir.path().join(format!("test_{i}.log"));
             let mut file = File::create(&file_path).unwrap();
-            writeln!(file, "Log file {} content", i).unwrap();
+            writeln!(file, "Log file {i} content").unwrap();
         }
 
         let result = view_log_files(temp_dir.path());

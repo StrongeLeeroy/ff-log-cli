@@ -71,9 +71,9 @@ mod tests {
     #[test]
     #[should_panic(expected = "not a file")]
     fn test_list_log_file_invalid_path() {
-        let temp_dir = TempDir::new().unwrap();
-        let invalid_path = temp_dir.path();
+        use std::path::Path;
 
-        list_log_file(&invalid_path);
+        let invalid_path = Path::new("/");
+        list_log_file(invalid_path);
     }
 }
