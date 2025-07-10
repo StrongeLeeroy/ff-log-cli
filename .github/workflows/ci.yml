@@ -31,7 +31,7 @@ jobs:
         run: cargo fmt --all -- --check
 
       - name: Run clippy
-        run: cargo clippy --all-features -- -D warnings
+        run: cargo clippy --target x86_64-pc-windows-msvc --all-features -- -D warnings
 
       - name: Run tests
         run: cargo test --all-features --workspace
