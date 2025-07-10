@@ -49,7 +49,7 @@ fn main() -> Result<(), io::Error> {
         }
     }
     let duration = start.elapsed();
-    println!("Completed in: {:?}", duration);
+    println!("Completed in: {duration:?}");
     Ok(())
 }
 

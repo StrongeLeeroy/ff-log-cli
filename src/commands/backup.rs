@@ -18,7 +18,7 @@ pub fn backup_log_file(path: &Path) {
             println!("Moved.");
         }
         Err(err) => {
-            println!("Failed: {}", err);
+            println!("Failed: {err}");
         }
     }
 }

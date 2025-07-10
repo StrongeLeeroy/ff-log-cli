@@ -8,7 +8,7 @@ pub fn delete_log_file(path: &Path) {
             println!("Removed.");
         }
         Err(err) => {
-            println!("Failed: {}", err);
+            println!("Failed: {err}");
         }
     }
 }
