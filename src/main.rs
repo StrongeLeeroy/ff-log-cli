@@ -83,3 +83,32 @@ impl Config {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    #[should_panic]
+    fn test_new_config_no_args() {
+        let invalid_args: Vec<String> = Vec::new();
+        let _config = Config::new(&invalid_args);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_new_config_one_arg() {
+        let invalid_args: Vec<String> = Vec::from([String::from("invalid_option")]);
+        let _config = Config::new(&invalid_args);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_new_config_two_args_invalid() {
+        let invalid_args: Vec<String> = Vec::from([
+            String::from("invalid_option"),
+            String::from("invalid_option_2"),
+        ]);
+        let _config = Config::new(&invalid_args);
+    }
+}
